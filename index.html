@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Urban Pollution & Human Health Monitor</title>
+
+  <!-- Google Fonts: Syne (display) + DM Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <!-- Chart.js for AQI history graph -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- Leaflet for pollution map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ══════════ NOISE TEXTURE OVERLAY ══════════ -->
+  <div class="noise-overlay" aria-hidden="true"></div>
+
+  <!-- ══════════ AMBIENT GLOW BLOBS ══════════ -->
+  <div class="blob blob-1" aria-hidden="true"></div>
+  <div class="blob blob-2" aria-hidden="true"></div>
+  <div class="blob blob-3" aria-hidden="true"></div>
+
+  <!-- ══════════ HEADER ══════════ -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-mark" aria-hidden="true">
+        <span class="logo-ring"></span>
+        <span class="logo-dot"></span>
+      </div>
+      <div class="header-text">
+        <h1 class="site-title">Urban Pollution<br /><span class="accent-text">&amp; Human Health</span> Monitor</h1>
+        <p class="site-tagline">Real-time air quality intelligence for healthier living</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════ MAIN CONTENT ══════════ -->
+  <main class="main-container">
+
+    <!-- ── SEARCH BAR (Bonus: city search) ── -->
+    <section class="search-section" aria-label="City search">
+      <div class="search-card">
+        <div class="search-inner">
+          <div class="search-wrap">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input
+              type="text"
+              id="cityInput"
+              class="city-input"
+              placeholder="Search city (e.g. Mumbai, London…)"
+              autocomplete="off"
+              aria-label="City name"
+            />
+          </div>
+          <button id="searchBtn" class="btn btn-secondary" aria-label="Search city AQI">
+            Search City
+          </button>
+          <span class="divider" aria-hidden="true">or</span>
+          <button id="locationBtn" class="btn btn-primary" aria-label="Detect my location">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+            </svg>
+            Check AQI Around Me
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── STATUS MESSAGE ── -->
+    <div id="statusMsg" class="status-msg" role="status" aria-live="polite"></div>
+
+    <!-- ── RESULTS GRID (hidden until data loads) ── -->
+    <section id="resultsSection" class="results-section hidden" aria-label="AQI results">
+
+      <!-- Location card -->
+      <div class="card card-location" id="locationCard">
+        <div class="card-label">Detected Location</div>
+        <div class="card-location-body">
+          <svg class="pin-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+          </svg>
+          <div>
+            <div id="locationName" class="location-name">—</div>
+            <div id="coordsText" class="coords-text">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AQI score card -->
+      <div class="card card-aqi" id="aqiCard">
+        <div class="card-label">Air Quality Index</div>
+        <div class="aqi-display">
+          <div class="aqi-ring-wrap">
+            <svg class="aqi-ring" viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="ring-bg" cx="60" cy="60" r="50"/>
+              <circle class="ring-fill" id="aqiRingFill" cx="60" cy="60" r="50"
+                stroke-dasharray="314" stroke-dashoffset="314"/>
+            </svg>
+            <div class="aqi-score-center">
+              <span id="aqiScore" class="aqi-score">—</span>
+              <span class="aqi-unit">AQI</span>
+            </div>
+          </div>
+          <div class="aqi-meta">
+            <div id="aqiBadge" class="aqi-badge">—</div>
+            <div id="aqiCategory" class="aqi-category">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Health suggestion card -->
+      <div class="card card-health" id="healthCard">
+        <div class="card-label">Health Advisory</div>
+        <div class="health-body">
+          <div id="healthIcon" class="health-icon" aria-hidden="true">🌿</div>
+          <p id="healthMsg" class="health-msg">—</p>
+        </div>
+        <div id="healthTips" class="health-tips"></div>
+      </div>
+
+      <!-- Pollutants breakdown card -->
+      <div class="card card-pollutants" id="pollutantsCard">
+        <div class="card-label">Pollutant Breakdown</div>
+        <div id="pollutantsList" class="pollutants-list"></div>
+      </div>
+
+      <!-- AQI History Chart (bonus) -->
+      <div class="card card-chart" id="chartCard">
+        <div class="card-label">AQI History (Last 5 Readings)</div>
+        <div class="chart-wrap">
+          <canvas id="aqiChart" aria-label="AQI history chart"></canvas>
+        </div>
+      </div>
+
+      <!-- Map card (bonus) -->
+      <div class="card card-map" id="mapCard">
+        <div class="card-label">Pollution Map</div>
+        <div id="leafletMap" class="leaflet-map" aria-label="Pollution map"></div>
+      </div>
+
+    </section>
+
+    <!-- ── LAST UPDATED ── -->
+    <p id="lastUpdated" class="last-updated hidden"></p>
+
+  </main>
+
+  <!-- ══════════ FOOTER ══════════ -->
+  <footer class="site-footer">
+    <p>Data via <a href="https://openweathermap.org/" target="_blank" rel="noopener">OpenWeatherMap</a> Air Pollution API · Built with ♥ for healthier cities</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
