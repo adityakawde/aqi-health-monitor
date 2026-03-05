@@ -1,0 +1,162 @@
+# 🌆 Urban Pollution & Human Health Monitor
+
+A modern, real-time **Air Quality Index (AQI)** web application that detects your location, fetches live pollution data from the OpenWeatherMap API, and displays color-coded health recommendations — all without any backend.
+
+---
+
+## ✨ Features
+
+| Feature | Description |
+|---|---|
+| 📍 **Geolocation** | Auto-detect your coordinates via the browser |
+| 🔍 **City Search** | Search any city worldwide for its AQI |
+| 🎨 **Signal Colors** | Green / Yellow / Orange / Red / Purple indicators |
+| 💊 **Health Tips** | Contextual health recommendations per AQI level |
+| 📊 **History Chart** | Rolling AQI history graph (Chart.js) |
+| 🗺️ **Pollution Map** | Live Leaflet map with PM2.5 tile overlay |
+| 🧪 **Pollutant Breakdown** | CO, NO₂, O₃, SO₂, PM2.5, PM10, NH₃ bars |
+| 📱 **Responsive** | Works on mobile, tablet, and desktop |
+
+---
+
+## 🗂️ Project Structure
+
+```
+project-folder/
+├── index.html   ← App entry point (structure + scripts)
+├── style.css    ← All styles (dark industrial theme)
+├── script.js    ← API logic, chart, map, UI updates
+└── README.md    ← This file
+```
+
+---
+
+## 🚀 Running Locally (VS Code)
+
+### Option A — Live Server Extension (recommended)
+
+1. **Install VS Code** → [code.visualstudio.com](https://code.visualstudio.com)
+2. **Open the project folder** in VS Code (`File → Open Folder`)
+3. Install the **Live Server** extension by Ritwick Dey (search in Extensions panel)
+4. Right-click `index.html` → **"Open with Live Server"**
+5. Your browser opens at `http://127.0.0.1:5500`
+
+> ⚠️ **Important:** Browser geolocation requires either `localhost` or HTTPS. Live Server satisfies the `localhost` requirement automatically.
+
+### Option B — Python HTTP Server
+
+```bash
+# Navigate to the project folder
+cd project-folder
+
+# Python 3
+python -m http.server 8080
+
+# Then open http://localhost:8080 in your browser
+```
+
+### Option C — Node.js `http-server`
+
+```bash
+npm install -g http-server
+cd project-folder
+http-server -p 8080
+# Open http://localhost:8080
+```
+
+---
+
+## ☁️ Deploying to GitHub Pages (Free Live URL)
+
+### Step 1 — Create a GitHub Account
+Go to [github.com](https://github.com) and sign up if you haven't already.
+
+### Step 2 — Create a New Repository
+
+1. Click the **"+"** icon → **"New repository"**
+2. Name it: `urban-pollution-monitor` (or any name)
+3. Set to **Public**
+4. Click **"Create repository"**
+
+### Step 3 — Upload Your Files
+
+**Via GitHub Web UI (easiest):**
+1. In your new repo, click **"Add file" → "Upload files"**
+2. Drag and drop all 4 files (`index.html`, `style.css`, `script.js`, `README.md`)
+3. Click **"Commit changes"**
+
+**Via Git CLI:**
+```bash
+# Inside your project folder
+git init
+git add .
+git commit -m "Initial commit — Urban Pollution Monitor"
+
+# Replace YOUR_USERNAME and YOUR_REPO_NAME below
+git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+git branch -M main
+git push -u origin main
+```
+
+### Step 4 — Enable GitHub Pages
+
+1. Go to your repo on GitHub
+2. Click **"Settings"** tab
+3. In the left sidebar, click **"Pages"**
+4. Under **"Branch"**, select `main` and folder `/ (root)`
+5. Click **"Save"**
+
+### Step 5 — Get Your Live URL 🎉
+
+After ~60 seconds, GitHub Pages will publish your site at:
+
+```
+https://YOUR_USERNAME.github.io/YOUR_REPO_NAME/
+```
+
+That's your permanent, shareable live link!
+
+---
+
+## 🔑 API Details
+
+| Item | Value |
+|---|---|
+| Provider | [OpenWeatherMap](https://openweathermap.org/api/air-pollution) |
+| Endpoint | `https://api.openweathermap.org/data/2.5/air_pollution` |
+| Geocoding | `https://api.openweathermap.org/geo/1.0/direct` |
+| Key used | `b871b4234c3395d1b1321ebf4148e3c7` |
+| Rate limit | 60 calls/minute on free plan |
+
+---
+
+## 🎨 AQI Color Legend
+
+| AQI Level | Label | Color | Action |
+|---|---|---|---|
+| 1 | Good | 🟢 Green | Outdoor activities safe |
+| 2 | Fair | 🟡 Yellow | Sensitive groups be aware |
+| 3 | Moderate | 🟠 Orange | Wear mask, reduce exertion |
+| 4 | Poor | 🔴 Red | Avoid outdoor exercise |
+| 5 | Very Poor | 🟣 Purple | Stay indoors |
+
+---
+
+## 🛠️ Built With
+
+- **HTML5 / CSS3 / Vanilla JS** — Zero build tools needed
+- **[OpenWeatherMap API](https://openweathermap.org/)** — AQI + geocoding data
+- **[Chart.js](https://www.chartjs.org/)** — AQI history line chart
+- **[Leaflet.js](https://leafletjs.com/)** — Interactive pollution map
+- **[CartoDB Dark Tiles](https://carto.com/)** — Dark-themed base map
+- **[Google Fonts](https://fonts.google.com/)** — Syne + DM Sans typography
+
+---
+
+## 📄 License
+
+MIT — Free to use, modify, and distribute.
+
+---
+
+*Made with ♥ for cleaner, healthier cities.*
